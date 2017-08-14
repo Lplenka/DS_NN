@@ -126,3 +126,26 @@ while epoch < epoch_limit and error > desired_error:
     # print current epoch status
     print 'Epoch: %4d (of maximum %4d), max error: %.5f (of desired < %.5f)' % (epoch, epoch_limit, error, desired_error)
     epoch += 1
+
+print 'Actual testing of trained NN'
+
+table_data = [
+    ['Sample', 'Digit', 'Sample', 'Digit', 'Sample', 'Digit', 'Sample', 'Digit']
+]
+
+# we print three rows
+for row in xrange(3):
+    table_data.append([''] * 8)
+    # with 8 columns, 4 image -> result pairs
+    for col in xrange(4):
+        # pick one random sample between 0 and sample count
+        ri = random.randint(0, samples.shape[0] - 1)
+        sample = samples[ri]
+
+        table_data[row+1][col*2] = print_sample(sample)
+        table_data[row+1][col*2+1] = '\n'.join([' ' * 5, ' ' * 5, '  %d' % compute_result(sample)])
+
+table = AsciiTable(table_data)
+table.inner_row_border = True
+
+print table.table
