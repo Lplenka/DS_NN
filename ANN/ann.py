@@ -107,7 +107,9 @@ variance = accuracies.std()
 
 
 # Tuning the ANN
-from keras.wrappers.scikit_learn import KerasClassifier
+from keras.wrapp{
+
+}ers.scikit_learn import KerasClassifier
 from sklearn.model_selection import GridSearchCV
 from keras.models import Sequential
 from keras.layers import Dense
