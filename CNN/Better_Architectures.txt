@@ -1,0 +1,228 @@
+
+
+*******************************************Validation Accuray 94%***********************************************
+Epoch 1/10
+8000/8000 [==============================] - 692s - loss: 0.1936 - acc: 0.9206 - val_loss: 0.1998 - val_acc: 0.9203
+Epoch 2/10
+8000/8000 [==============================] - 687s - loss: 0.1499 - acc: 0.9401 - val_loss: 0.2203 - val_acc: 0.9240
+Epoch 3/10
+8000/8000 [==============================] - 659s - loss: 0.1269 - acc: 0.9493 - val_loss: 0.2138 - val_acc: 0.9231
+Epoch 4/10
+8000/8000 [==============================] - 621s - loss: 0.1128 - acc: 0.9559 - val_loss: 0.2213 - val_acc: 0.9296
+Epoch 5/10
+8000/8000 [==============================] - 620s - loss: 0.1026 - acc: 0.9603 - val_loss: 0.2210 - val_acc: 0.9191
+Epoch 6/10
+8000/8000 [==============================] - 621s - loss: 0.0963 - acc: 0.9632 - val_loss: 0.1976 - val_acc: 0.9429
+Epoch 7/10
+8000/8000 [==============================] - 679s - loss: 0.0901 - acc: 0.9660 - val_loss: 0.2273 - val_acc: 0.9233
+Epoch 8/10
+8000/8000 [==============================] - 673s - loss: 0.0879 - acc: 0.9673 - val_loss: 0.1976 - val_acc: 0.9371
+Epoch 9/10
+8000/8000 [==============================] - 654s - loss: 0.0824 - acc: 0.9692 - val_loss: 0.2278 - val_acc: 0.9391
+Epoch 10/10
+8000/8000 [==============================] - 677s - loss: 0.0819 - acc: 0.9696 - val_loss: 0.1998 - val_acc: 0.9326
+
+
+# coding: utf-8
+# In[1]:
+# Convolutional Neural Network
+# Installing Theano
+# pip install --upgrade --no-deps git+git://github.com/Theano/Theano.git
+# Installing Tensorflow
+# pip install tensorflow
+# Installing Keras
+# pip install --upgrade keras
+# Part 1 - Building the CNN
+# Importing the Keras libraries and packages
+from keras.models import Sequential
+from keras.layers import Conv2D
+from keras.layers import MaxPooling2D
+from keras.layers import Flatten
+from keras.layers import Dense
+from keras.layers import Dropout
+# In[2]:
+import tensorflow as tf
+from keras.backend.tensorflow_backend import set_session
+config = tf.ConfigProto()
+config.gpu_options.per_process_gpu_memory_fraction = 0.5
+set_session(tf.Session(config=config))
+# In[3]:
+# Image dimensions
+img_width, img_height = 150, 150
+# In[4]:
+# Initialising the CNN
+classifier = Sequential()
+# Regulize
+# classifier.add(Dropout(rate=0.2, input_shape = (128, 128, 3)))
+# Step 1 - Adding a first convolutional layer
+classifier.add(Conv2D(32, (3, 3), activation = 'relu', input_shape = (img_width, img_height, 3)))
+classifier.add(MaxPooling2D(pool_size = (2, 2)))
+# Adding a second convolutional layer
+classifier.add(Conv2D(32, (3, 3), activation = 'relu'))
+classifier.add(MaxPooling2D(pool_size = (2, 2)))
+# Adding a third convolutional layer
+classifier.add(Conv2D(64, (3, 3), activation = 'relu'))
+classifier.add(MaxPooling2D(pool_size = (2, 2)))
+# Adding a fourth convolutional layer
+classifier.add(Conv2D(64, (3, 3), activation = 'relu'))
+classifier.add(MaxPooling2D(pool_size = (2, 2)))
+# Step 3 - Flattening
+classifier.add(Flatten())
+# Step 4 - Full connection
+classifier.add(Dropout(rate=0.6))
+classifier.add(Dense(units = 64, activation='relu'))
+classifier.add(Dropout(rate=0.3))
+classifier.add(Dense(units = 1, activation = 'sigmoid'))
+# Compiling the CNN
+classifier.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+# In[5]:
+# Part 2 - Fitting the CNN to the images
+# Preprocess
+from keras.preprocessing.image import ImageDataGenerator
+train_datagen = ImageDataGenerator(rescale = 1./255,
+                                   shear_range = 0.2,
+                                   zoom_range = 0.2,
+                                   horizontal_flip = True)
+test_datagen = ImageDataGenerator(rescale = 1./255)
+training_set = train_datagen.flow_from_directory('dataset/training_set',
+                                                 target_size = (img_width, img_height),
+                                                 batch_size = 32,
+                                                 class_mode = 'binary')
+test_set = test_datagen.flow_from_directory('dataset/test_set',
+                                            target_size = (img_width, img_height),
+                                            batch_size = 32,
+                                            class_mode = 'binary')
+# In[8]:
+classifier.fit_generator(training_set,
+                         steps_per_epoch = 8000,
+                         epochs = 10,
+                         validation_data = test_set,
+                         validation_steps = 2000,
+                         workers = 5)
+# In[9]:
+classifier.save('model7 val_acc 0.9326')
+# In[ ]:
+
+
+
+************************* 95% validation accuracy*******************
+# Importing the Keras libraries and packages
+from keras.models import Sequential
+from keras.layers import Conv2D
+from keras.layers import MaxPooling2D
+from keras.layers import Flatten
+from keras.layers import Dense
+from keras.layers import Activation
+from keras.layers import BatchNormalization
+from keras import optimizers
+from keras.layers import Dropout
+
+
+img_size = 196
+n_epoch = 150
+batch_size_train = 32
+batch_size_test = 32
+optimizer = optimizers.Adam(lr=0.0005)
+
+# Initialising the CNN
+classifier = Sequential()
+
+# Step 1 - Convolution
+classifier.add(Conv2D(32, (5, 5),kernel_initializer='lecun_normal',padding = 'same', input_shape = (3,img_size, img_size)))
+classifier.add(BatchNormalization(axis = 1))
+classifier.add(Activation('elu'))
+classifier.add(MaxPooling2D(pool_size = (2, 2)))
+
+
+# Adding a second convolutional layer
+classifier.add(Conv2D(64, (3, 3),kernel_initializer='lecun_normal', padding = 'same'))
+classifier.add(BatchNormalization(axis = 1))
+classifier.add(Activation('elu'))
+classifier.add(MaxPooling2D(pool_size = (2, 2)))
+#classifier.add(Dropout(0.2))
+
+# Adding a third convolutional layer
+classifier.add(Conv2D(128, (3, 3),kernel_initializer='lecun_normal',padding = 'same'))
+classifier.add(BatchNormalization(axis = 1))
+classifier.add(Activation('elu'))
+classifier.add(MaxPooling2D(pool_size = (2, 2)))
+classifier.add(Dropout(0.2))
+
+# Adding a fourth convolutional layer
+classifier.add(Conv2D(256, (3, 3),kernel_initializer='lecun_normal', padding = 'same'))
+classifier.add(BatchNormalization(axis = 1))
+classifier.add(Activation('elu'))
+classifier.add(MaxPooling2D(pool_size = (2, 2)))
+classifier.add(Dropout(0.2))
+
+# Step 3 - Flattening
+classifier.add(Flatten())
+
+# Step 4 - Full connection
+classifier.add(Dense(units = 128,kernel_initializer='lecun_normal'))
+classifier.add(BatchNormalization())
+classifier.add(Activation('elu'))
+classifier.add(Dropout(0.2))
+
+classifier.add(Dense(units = 256,kernel_initializer='lecun_normal'))
+classifier.add(BatchNormalization())
+classifier.add(Activation('elu'))
+classifier.add(Dropout(0.5))
+
+classifier.add(Dense(units = 256,kernel_initializer='lecun_normal'))
+classifier.add(BatchNormalization())
+classifier.add(Activation('elu'))
+classifier.add(Dropout(0.5))
+
+#output layer
+classifier.add(Dense(units = 1, activation = 'sigmoid'))
+
+# Compiling the CNN
+classifier.compile(optimizer = optimizer, loss = 'binary_crossentropy', metrics = ['accuracy'])
+
+# Part 2 - Fitting the CNN to the images
+
+from keras.preprocessing.image import ImageDataGenerator
+
+
+train_datagen = ImageDataGenerator(rescale = 1./255,
+                     shear_range = 0.2,
+                     zoom_range = 0.2,
+                     height_shift_range = 0.2,
+                     width_shift_range = 0.2,
+                     horizontal_flip = True)
+
+test_datagen = ImageDataGenerator(rescale = 1./255)
+
+
+training_set = train_datagen.flow_from_directory('dataset/training_set',
+                                                 target_size = (img_size, img_size),
+                                                 batch_size = batch_size_train,
+                                                 class_mode = 'binary')
+
+test_set = test_datagen.flow_from_directory('dataset/test_set',
+                                            target_size = (img_size, img_size),
+                                            batch_size = batch_size_test,
+                                            class_mode = 'binary')
+
+classifier_history_withBN = classifier.fit_generator(training_set,
+                         steps_per_epoch = 8000/batch_size_train,
+                         epochs = n_epoch,
+                         validation_data = test_set,
+                         validation_steps = 2000/batch_size_test)
+
+
+
+
+#save weights
+classifier.save_weights('WithEluWithBNWithDropout.h5')
+
+# summarize history for accuracy
+import matplotlib.pyplot as plt
+plt.plot(classifier_history_withBN.history['acc'])
+plt.plot(classifier_history_withBN.history['val_acc'])
+plt.title('model accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
