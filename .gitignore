@@ -3,3 +3,15 @@
 .pkl/
 .DS_Store
 *.jpg
+*.dat
+*.Rhistory
+*.data
+*.genre
+*.pl
+*.sh
+*.base
+*.test
+*.item
+*.info
+*.user
+*.occupation
