@@ -1,0 +1,53 @@
+p {
+  margin-left:-210px;
+  position:absolute;
+  font-size: 900%;
+  width:410px;
+  left:50%; 
+}
+.dots{
+display:inline-block;
+  background:white;
+  height:100px;
+  width:100px;
+  float: left;
+  border: 10px solid #333;
+}
+.dots2{
+  display:inline-block;
+  background:#333;
+  height:100px;
+  width:100px;
+  float: right;
+}
+
+.guys{
+  position:absolute;
+  height:100px;
+  width:350px;
+  top:200px;
+  left:50%;
+  margin-left:-175px;
+}
+
+td {
+border: 1px solid #333;
+height: 100px;
+width: 100px;
+border-style: solid;
+border-width: 15px;
+visibility: hidden;
+}
+
+table{
+  position:absolute;
+  left:50%;
+  margin-left:-150px;
+  top:10%;
+}
+html{
+  width:100%;
+  height:100%;
+  background:linear-gradient(#f7aeb7, #ffcccc, #ffeee6);
+ 
+}
