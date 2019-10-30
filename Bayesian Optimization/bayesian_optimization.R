@@ -18,3 +18,7 @@ burglaries$week= as.Date(cut(burglaries$date_clean, 'week'))
 burglary_counts       = burglaries %>%
   group_by(district, week) %>%
   summarise(COUNTCRIMES = length(district))
+
+head(burglary_counts)
+
+
