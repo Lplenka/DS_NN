@@ -11,6 +11,14 @@ Hyperparameter tuning is a computationally intensive process, even when you have
 ## Pulling Open Data
 First, we pull all burglaries in the city since 2001. We access Chicago’s Open Data Portal through the RSocrata API interface. Then we will aggregate to counts by week and district.
 
+
+```{r}
+library(RSocrata)
+library(dplyr)
+library(lubridate)
+```
+
+
 ```{r}
 fbi_code = "'05'"
 url = sprintf("https://data.cityofchicago.org/resource/6zsd-86xi.json?$select=*&$where=fbi_code=%s", fbi_code)
@@ -24,6 +32,8 @@ burglaries$date_clean = as.Date(as.POSIXct(burglaries$date, format = '%Y-%m-%d %
 burglaries$week= as.Date(cut(burglaries$date_clean, 'week'))
 
 ```
+
+
 ```{r}
 #Find the burglary counts per district per week
 burglary_counts       = burglaries %>%
@@ -155,59 +165,7 @@ prophet_fit_bayes = function(changepoint_prior_scale, seasonality_prior_scale, n
   
 changepoint_bounds    = range(rand_search_grid$changepoint_prior_scale)
 n_changepoint_bounds  = as.integer(range(rand_search_grid$n_changepoints))
-seasonality_bounds    = range(rand_search_grid$seasonality_prior_scale)
-
-bayesian_search_bounds = list(changepoint_prior_scale = changepoint_bounds,
-                              seasonality_prior_scale = seasonality_bounds,
-                              n_changepoints = as.integer(n_changepoint_bounds))
-
-
-
-ba_search = BayesianOptimization(prophet_fit_bayes,
-                                    bounds = bayesian_search_bounds,
-                                    init_grid_dt = rand_search_grid, 
-                                    init_points = 0, 
-                                    n_iter = 15,
-                                    acq = 'ucb', 
-                                    kappa = 1, 
-                                    eps = 0,
-                                    verbose = TRUE)
-```
-
-```{r}
-prophet_fit_bayes = function(changepoint_prior_scale, seasonality_prior_scale, n_changepoints) {
-    
-    error = c()
-    for (d in date_seq) {
-      train = subset(cv_set, ds < d)
-      test  = subset(cv_set, ds == d)
-    
-      m = prophet(train, growth = 'linear',
-                 seasonality.prior.scale = seasonality_prior_scale, 
-                 changepoint.prior.scale = changepoint_prior_scale,
-                 n.changepoints = n_changepoints,
-                 weekly.seasonality = F,
-                 daily.seasonality = F)
-    
-      future = make_future_dataframe(m, periods = 1, freq = 'week')
-    
-    # NOTE: There's a problem in function names with library(caret)
-      forecast = predict(m, future)
-      forecast$ds = as.Date(forecast$ds)
-    
-      error_d = forecast::accuracy(forecast[forecast$ds %in% test$ds, 'yhat'], test$y)[ , 'MAPE']
-      error = c(error, error_d)
-  }
-  
-    ## The function wants to _maximize_ the outcome so we return 
-    ## the negative of the resampled MAPE value. `Pred` can be used
-    ## to return predicted values but we'll avoid that and use zero
-    list(Score = -mean(error), Pred = 0)
-}
-  
-changepoint_bounds    = range(rand_search_grid$changepoint_prior_scale)
-n_changepoint_bounds  = as.integer(range(rand_search_grid$n_changepoints))
-seasonality_bounds    = range(rand_search_grid$seasonality_prior_scale)
+seasonality_bounds    = range(rand_search_grid$seasonality_prior_scale + 0.0001)
 
 bayesian_search_bounds = list(changepoint_prior_scale = changepoint_bounds,
                               seasonality_prior_scale = seasonality_bounds,
@@ -234,7 +192,7 @@ best_params_ba  = c(ba_search$Best_Par, Value = -1*ba_search$Best_Value)
 m = prophet(cv_set, growth = 'linear',
                  seasonality.prior.scale = best_params_ba[['seasonality_prior_scale']], 
                  changepoint.prior.scale = best_params_ba[['changepoint_prior_scale']],
-                 n.changepoints = best_params_ba[['n_changepoints']])
+                 n.changepoints = best_params_ba[['n_changepoints']], weekly.seasonality=TRUE, daily.seasonality=TRUE)
 ```
 
 ```{r}
