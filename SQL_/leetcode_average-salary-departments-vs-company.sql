@@ -77,15 +77,16 @@ else "same"
 end as comparison
 
  from 
-(select date_format(s.pay_date,"%x-%m") as mb, d.department_id, 
-avg(s.amount) as dep_avg
-from salary s
-join employee1 d
-on s.employee_id = d.employee_id
-group by d.department_id, date_format(pay_date,"%x-%m")
+(   select date_format(s.pay_date,"%x-%m") as mb, d.department_id, 
+    avg(s.amount) as dep_avg
+    from salary s
+    join employee1 d
+    on s.employee_id = d.employee_id
+    group by d.department_id, date_format(pay_date,"%x-%m")
 ) b 
 join 
-(select avg(amount) as avg_comp_salary , date_format(pay_date,"%x-%m") as ma from salary group by date_format(pay_date,"%x-%m") )  a
+(   select avg(amount) as avg_comp_salary , date_format(pay_date,"%x-%m") as ma from salary group by date_format(pay_date,"%x-%m") 
+)  a
 
 on b.mb = a.ma;
 

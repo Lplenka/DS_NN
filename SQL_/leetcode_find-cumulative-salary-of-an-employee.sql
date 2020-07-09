@@ -39,26 +39,34 @@ order by e1.Id, e1.Month desc;
 select t1.Id, t1.Month, SUM(t2.Salary) as Sal
 from
 
-(select e1.Id, e1.Month, e1.Salary
-from 
-(select Id, Month, Salary from Employee2) e1
- inner join
-(select Id, max(Month) as m from Employee2 group by Id) e2
-on e1.Id = e2.Id
-where e1.Month < e2.m
-order by e1.Id, e1.Month desc) t1
+(
+
+    select e1.Id, e1.Month, e1.Salary
+    from 
+    (select Id, Month, Salary from Employee2) e1
+     inner join
+    (select Id, max(Month) as m from Employee2 group by Id) e2
+    on e1.Id = e2.Id
+    where e1.Month < e2.m
+    order by e1.Id, e1.Month desc
+
+
+) t1
 
 
 inner join 
 
-(select e1.Id, e1.Month, e1.Salary
-from 
-(select Id, Month, Salary from Employee2) e1
- inner join
-(select Id, max(Month) as m from Employee2 group by Id) e2
-on e1.Id = e2.Id
-where e1.Month < e2.m
-order by e1.Id, e1.Month desc) t2 
+(
+    select e1.Id, e1.Month, e1.Salary
+    from 
+    (select Id, Month, Salary from Employee2) e1
+     inner join
+    (select Id, max(Month) as m from Employee2 group by Id) e2
+    on e1.Id = e2.Id
+    where e1.Month < e2.m
+    order by e1.Id, e1.Month desc
+
+) t2 
 
 on t1.Id = t2.Id where t1.Month >= t2.Month
 
