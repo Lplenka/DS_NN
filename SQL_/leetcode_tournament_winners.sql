@@ -1,5 +1,6 @@
 #https://leetcode.com/problems/tournament-winners
 #https://leetcode.jp/problemdetail.php?id=1194
+#https://github.com/kamyu104/LeetCode-Solutions/tree/master/MySQL
 
 use amazon;
 SET SQL_SAFE_UPDATES = 0;
