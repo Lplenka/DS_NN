@@ -1,5 +1,7 @@
 /*
-For every string given as input, you need to tell us the number of subsequences of it that are palindromes (need not necessarily be distinct). Note that the empty string is not a palindrome.
+For every string given as input, you need to tell us the number of subsequences of 
+it that are palindromes (need not necessarily be distinct). 
+Note that the empty string is not a palindrome.
 
 */
 
